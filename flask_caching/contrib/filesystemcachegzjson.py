@@ -133,7 +133,6 @@ class FileSystemCacheGzJson(BaseCache):
         for idx, fname in enumerate(entries):
             try:
                 remove = False
-                #with open(fname, "rb") as f:
                 with gzip.open(fname, mode='rb') as f:
                     expires, _ = json.load(f)
                 remove = (expires != 0 and expires <= now) or idx % 3 == 0
@@ -167,15 +166,14 @@ class FileSystemCacheGzJson(BaseCache):
         hit_or_miss = "miss"
         filename = self._get_filename(key)
         try:
-            #with open(filename, "rb") as f:
             with gzip.open(filename, mode='rb') as f:                
                 pickle_time, result = json.load(f)
                 expired = pickle_time != 0 and pickle_time < time()
-                if expired:
-                    result = None
-                    self.delete(key)
-                else:    
+                if not expired:
                     hit_or_miss = "hit"
+            if expired:
+                result = None
+                self.delete(key)
         except FileNotFoundError:
             pass
         except (IOError, OSError, json.JSONDecodeError) as exc:
@@ -209,16 +207,12 @@ class FileSystemCacheGzJson(BaseCache):
         filename = self._get_filename(key)
         filename_tmp = filename + '__gzj_.tmp_'
         try:
-            #fd, tmp = tempfile.mkstemp(
-            #    suffix=self._fs_transaction_suffix, dir=self._path
-            #)
-            #with os.fdopen(fd, "wb") as f:
             with gzip.open(filename_tmp, 'wt', encoding='UTF-8') as f:           
                 json.dump([timeout, value], f)
             is_new_file = not os.path.exists(filename)
             if not is_new_file:
                 os.remove(filename)
-            os.replace(filename_tmp, filename) 
+            os.replace(filename_tmp, filename)
             os.chmod(filename, self._mode)
         except (IOError, OSError) as exc:
             logger.error("set key %r -> %s", key, exc)
@@ -251,10 +245,9 @@ class FileSystemCacheGzJson(BaseCache):
         expired = False
         filename = self._get_filename(key)
         try:
-            #with open(filename, "rb") as f:
             with gzip.open(filename, mode='rb') as f:
                 pickle_time, _ = json.load(f)
-            expired = pickle_time != 0 and pickle_time < time()
+                expired = pickle_time != 0 and pickle_time < time()
             if expired:
                 self.delete(key)
             else:

@@ -138,7 +138,6 @@ class FileSystemCacheGz(BaseCache):
         for idx, fname in enumerate(entries):
             try:
                 remove = False
-                #with open(fname, "rb") as f:
                 with gzip.open(fname, mode='rb') as f:
                     expires = pickle.load(f)
                 remove = (expires != 0 and expires <= now) or idx % 3 == 0
@@ -172,15 +171,14 @@ class FileSystemCacheGz(BaseCache):
         hit_or_miss = "miss"
         filename = self._get_filename(key)
         try:
-            #with open(filename, "rb") as f:
             with gzip.open(filename, mode='rb') as f:                
                 pickle_time = pickle.load(f)
                 expired = pickle_time != 0 and pickle_time < time()
-                if expired:
-                    self.delete(key)
-                else:
+                if not expired:
                     hit_or_miss = "hit"
                     result = pickle.load(f)
+            if expired:
+                self.delete(key)
         except FileNotFoundError:
             pass
         except (IOError, OSError, pickle.PickleError) as exc:
@@ -214,17 +212,13 @@ class FileSystemCacheGz(BaseCache):
         filename = self._get_filename(key)
         filename_tmp = filename + '__gz_.tmp_'
         try:
-            #fd, tmp = tempfile.mkstemp(
-            #    suffix=self._fs_transaction_suffix, dir=self._path
-            #)
-            #with os.fdopen(fd, "wb") as f:
             with gzip.open(filename_tmp, mode='wb') as f:
                 pickle.dump(timeout, f, 1)
                 pickle.dump(value, f, pickle.HIGHEST_PROTOCOL)                
             is_new_file = not os.path.exists(filename)
             if not is_new_file:
                 os.remove(filename)
-            os.replace(filename_tmp, filename) 
+            os.replace(filename_tmp, filename)
             os.chmod(filename, self._mode)
         except (IOError, OSError) as exc:
             logger.error("set key %r -> %s", key, exc)
@@ -257,10 +251,9 @@ class FileSystemCacheGz(BaseCache):
         expired = False
         filename = self._get_filename(key)
         try:
-            #with open(filename, "rb") as f:
             with gzip.open(filename, mode='rb') as f:
                 pickle_time = pickle.load(f)
-            expired = pickle_time != 0 and pickle_time < time()
+                expired = pickle_time != 0 and pickle_time < time()
             if expired:
                 self.delete(key)
             else:

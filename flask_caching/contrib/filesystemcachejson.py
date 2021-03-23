@@ -133,7 +133,7 @@ class FileSystemCacheJson(BaseCache):
         for idx, fname in enumerate(entries):
             try:
                 remove = False
-                with open(fname, "r") as f:
+                with open(fname, 'r') as f:
                     expires, _ = json.load(f)
                 remove = (expires != 0 and expires <= now) or idx % 3 == 0
                 if remove:
@@ -166,14 +166,15 @@ class FileSystemCacheJson(BaseCache):
         hit_or_miss = "miss"
         filename = self._get_filename(key)
         try:
-            with open(filename, "r") as f:              
+            with open(filename, 'r') as f:              
                 pickle_time, result = json.load(f)
                 expired = pickle_time != 0 and pickle_time < time()
-                if expired:
-                    result = None
-                    self.delete(key)
-                else:    
+                if not expired:
                     hit_or_miss = "hit"
+
+            if expired:
+                self.delete(key)
+                result = None
         except FileNotFoundError:
             pass
         except (IOError, OSError, json.JSONDecodeError) as exc:
@@ -205,14 +206,16 @@ class FileSystemCacheJson(BaseCache):
 
         timeout = self._normalize_timeout(timeout)
         filename = self._get_filename(key)
-        filename_tmp = filename + '__gzj_.tmp_'
         try:
-            with open(filename_tmp, 'w') as f:           
+            fd, tmp = tempfile.mkstemp(
+                suffix=self._fs_transaction_suffix, dir=self._path
+            )
+            with os.fdopen(fd, 'w') as f:           
                 json.dump([timeout, value], f)
             is_new_file = not os.path.exists(filename)
             if not is_new_file:
                 os.remove(filename)
-            os.replace(filename_tmp, filename) 
+            os.replace(tmp, filename)
             os.chmod(filename, self._mode)
         except (IOError, OSError) as exc:
             logger.error("set key %r -> %s", key, exc)
@@ -245,9 +248,9 @@ class FileSystemCacheJson(BaseCache):
         expired = False
         filename = self._get_filename(key)
         try:
-            with open(filename, "r") as f:
+            with open(filename, 'r') as f:
                 pickle_time, _ = json.load(f)
-            expired = pickle_time != 0 and pickle_time < time()
+                expired = pickle_time != 0 and pickle_time < time()
             if expired:
                 self.delete(key)
             else:
