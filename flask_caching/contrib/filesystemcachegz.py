@@ -12,7 +12,7 @@
 import errno
 import hashlib
 import logging
-import os, gzip
+import os, gzip, stat, sys
 import tempfile
 from time import time
 
@@ -219,7 +219,10 @@ class FileSystemCacheGz(BaseCache):
             if not is_new_file:
                 os.remove(filename)
             os.replace(filename_tmp, filename)
-            os.chmod(filename, self._mode)
+            if (sys.platform=='win32'):
+                os.chmod(filename, stat.S_IWRITE)
+            else:
+                os.chmod(filename, self._mode)
         except (IOError, OSError) as exc:
             logger.error("set key %r -> %s", key, exc)
         else:
