@@ -87,7 +87,7 @@ pygments==2.11.2
     # via
     #   sphinx
     #   sphinx-tabs
-pylibmc==1.6.1
+pylibmc==1.6.3
     # via -r tests.in
 pyparsing==3.0.6
     # via packaging
