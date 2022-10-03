@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask_caching.backends.filesystem - custom MOD - gzip
+    flask_caching.backends.filesystem - custom MOD - pickle + gzip
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     The filesystem caching backend.
@@ -18,10 +18,7 @@ from time import time
 
 from flask_caching.backends.base import BaseCache
 
-try:
-    import cPickle as pickle
-except ImportError:  # pragma: no cover
-    import pickle  # type: ignore
+import pickle
 
 
 logger = logging.getLogger(__name__)
