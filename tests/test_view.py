@@ -1,7 +1,11 @@
 import hashlib
 import time
 
+from flask import make_response
 from flask import request
+from flask.views import View
+
+from flask_caching import CachedResponse
 
 
 def test_cached_view(app, cache):
@@ -25,6 +29,54 @@ def test_cached_view(app, cache):
 
     rv = tc.get("/")
     assert the_time != rv.data.decode("utf-8")
+
+
+def test_cached_view_class(app, cache):
+    class CachedView(View):
+        @cache.cached(2)
+        def dispatch_request(self):
+            return str(time.time())
+
+    app.add_url_rule("/", view_func=CachedView.as_view("name"))
+
+    tc = app.test_client()
+
+    rv = tc.get("/")
+    the_time = rv.data.decode("utf-8")
+
+    time.sleep(1)
+
+    rv = tc.get("/")
+
+    assert the_time == rv.data.decode("utf-8")
+
+    time.sleep(1)
+
+    rv = tc.get("/")
+    assert the_time != rv.data.decode("utf-8")
+
+
+def test_async_cached_view(app, cache):
+    import asyncio
+    import sys
+
+    if sys.version_info < (3, 7):
+        return
+
+    @app.route("/test-async")
+    @cache.cached(2)
+    async def cached_async_view():
+        await asyncio.sleep(0.1)
+        return str(time.time())
+
+    tc = app.test_client()
+    rv = tc.get("/test-async")
+    the_time = rv.data.decode("utf-8")
+
+    time.sleep(1)
+
+    rv = tc.get("/test-async")
+    assert the_time == rv.data.decode("utf-8")
 
 
 def test_cached_view_unless(app, cache):
@@ -228,6 +280,26 @@ def test_cache_timeout_property(app, cache):
     assert time2 != tc.get("/a/b").data.decode("utf-8")
 
 
+def test_cache_timeout_dynamic(app, cache):
+    @app.route("/")
+    @cache.cached(timeout=1)
+    def cached_view():
+        # This should override the timeout to be 2 seconds
+        return CachedResponse(response=make_response(str(time.time())), timeout=2)
+
+    tc = app.test_client()
+
+    rv1 = tc.get("/")
+    time1 = rv1.data.decode("utf-8")
+    time.sleep(1)
+
+    # it's been 1 second, cache is still active
+    assert time1 == tc.get("/").data.decode("utf-8")
+    time.sleep(1)
+    # it's been >2 seconds, cache is not still active
+    assert time1 != tc.get("/").data.decode("utf-8")
+
+
 def test_generate_cache_key_from_query_string(app, cache):
     """Test the _make_cache_key_query_string() cache key maker.
 
@@ -399,7 +471,7 @@ def test_cache_with_query_string_and_source_check_enabled(app, cache):
     def view_works():
         return str(time.time())
 
-    # ... and we overide the function attached to the view
+    # ... and we override the function attached to the view
     app.view_functions["works"] = view_works
 
     tc = app.test_client()
@@ -462,7 +534,7 @@ def test_cache_with_query_string_and_source_check_disabled(app, cache):
     def view_works():
         return str(time.time())
 
-    # ... and we overide the function attached to the view
+    # ... and we override the function attached to the view
     app.view_functions["works"] = view_works
 
     tc = app.test_client()

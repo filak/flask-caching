@@ -76,6 +76,17 @@ The cached decorator has another optional argument called ``unless``. This
 argument accepts a callable that returns True or False. If ``unless`` returns
 ``True`` then it will bypass the caching mechanism entirely.
 
+To dynamically determine the timeout within the view, you can return `CachedResponse`,
+a subclass of `flask.Response`::
+
+    @app.route("/")
+    @cache.cached()
+    def index():
+        return CachedResponse(
+            response=make_response(render_template('index.html')),
+            timeout=50,
+        )
+
 .. warning::
 
     When using ``cached`` on a view, take care to put it between Flask's
@@ -88,6 +99,20 @@ argument accepts a callable that returns True or False. If ``unless`` returns
 
     If you reverse both decorator, what will be cached is the result of
     ``@route`` decorator, and not the result of your view function.
+
+
+Caching Pluggable View Classes
+------------------------------
+
+Flask's pluggable view classes are also supported. To cache them, use the same
+:meth:`~Cache.cached` decorator on the ``dispatch_request`` method::
+
+    from flask.views import View
+
+    class MyView(View):
+        @cache.cached(timeout=50)
+        def dispatch_request(self):
+            return 'Cached for 50s'
 
 
 Caching Other Functions
@@ -328,8 +353,8 @@ The following configuration values exist for Flask-Caching:
                                   **redis**)
                                 * **RedisSentinelCache** (redis required; old
                                   name is **redissentinel**)
-                                * **RedisClusterCache** (redis and rediscluster
-                                  required; old name is **rediscluster**)
+                                * **RedisClusterCache** (redis required; old
+                                  name is **rediscluster**)
                                 * **UWSGICache** (uwsgi required; old name is
                                   **uwsgi**)
                                 * **MemcachedCache** (pylibmc or memcache
@@ -591,8 +616,8 @@ Set ``CACHE_TYPE`` to ``SpreadSASLMemcachedCache`` to use this type.  The old
 name, ``spreadsaslmemcached`` is deprecated and will be removed in
 Flask-Caching 2.0.
 
-Same as SASLMemcachedCache however, it has the ablity to spread value across
-multiple keys if it is bigger than the memcached treshold which by
+Same as SASLMemcachedCache however, it has the ability to spread value across
+multiple keys if it is bigger than the memcached threshold which by
 default is 1M. Uses pickle.
 
 .. versionadded:: 0.11
@@ -606,7 +631,7 @@ default is 1M. Uses pickle.
 
 
 UWSGICache
-`````````
+``````````
 
 .. warning::
    ``UWSGICache`` is not maintained nor tested.  Use at your own risk.
