@@ -4,11 +4,9 @@
 #
 #    pip-compile typing.in
 #
-mypy==0.971
+mypy==0.991
     # via -r typing.in
 mypy-extensions==0.4.3
-    # via mypy
-tomli==2.0.1
     # via mypy
 types-redis==4.3.19
     # via -r typing.in
