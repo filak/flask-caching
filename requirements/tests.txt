@@ -47,7 +47,7 @@ pytest==7.1.2
     #   -r tests.in
     #   pytest-asyncio
     #   pytest-xprocess
-pytest-asyncio==0.19.0
+pytest-asyncio==0.20.3
     # via -r tests.in
 pytest-xprocess==0.20.0
     # via -r tests.in

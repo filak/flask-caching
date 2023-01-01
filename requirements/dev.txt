@@ -103,7 +103,7 @@ pytest==7.1.2
     #   -r tests.in
     #   pytest-asyncio
     #   pytest-xprocess
-pytest-asyncio==0.19.0
+pytest-asyncio==0.20.3
     # via -r tests.in
 pytest-xprocess==0.20.0
     # via -r tests.in
@@ -149,10 +149,7 @@ toml==0.10.2
     #   pre-commit
     #   tox
 tomli==2.0.1
-    # via
-    #   build
-    #   pep517
-    #   pytest
+    # via pytest
 tox==3.25.1
     # via -r dev.in
 urllib3==1.26.11
