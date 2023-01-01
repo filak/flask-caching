@@ -6,7 +6,7 @@
 #
 alabaster==0.7.12
     # via sphinx
-asgiref==3.5.2
+asgiref==3.6.0
     # via -r tests.in
 async-timeout==4.0.2
     # via redis
@@ -149,10 +149,7 @@ toml==0.10.2
     #   pre-commit
     #   tox
 tomli==2.0.1
-    # via
-    #   build
-    #   pep517
-    #   pytest
+    # via pytest
 tox==3.25.1
     # via -r dev.in
 urllib3==1.26.11
