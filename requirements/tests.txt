@@ -36,13 +36,11 @@ pluggy==1.0.0
     # via pytest
 psutil==5.9.1
     # via pytest-xprocess
-py==1.11.0
-    # via pytest
 pylibmc==1.6.3
     # via -r tests.in
 pyparsing==3.0.9
     # via packaging
-pytest==7.1.2
+pytest==7.2.1
     # via
     #   -r tests.in
     #   pytest-asyncio
@@ -53,8 +51,6 @@ pytest-xprocess==0.20.0
     # via -r tests.in
 redis==4.3.4
     # via -r tests.in
-tomli==2.0.1
-    # via pytest
 werkzeug==2.2.1
     # via flask
 wrapt==1.14.1
