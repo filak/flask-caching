@@ -40,7 +40,7 @@ filelock==3.7.1
     # via
     #   tox
     #   virtualenv
-flask==2.2.1
+flask==2.2.2
     # via -r tests.in
 identify==2.5.2
     # via pre-commit
@@ -149,10 +149,7 @@ toml==0.10.2
     #   pre-commit
     #   tox
 tomli==2.0.1
-    # via
-    #   build
-    #   pep517
-    #   pytest
+    # via pytest
 tox==3.25.1
     # via -r dev.in
 urllib3==1.26.11
@@ -161,7 +158,7 @@ virtualenv==20.16.2
     # via
     #   pre-commit
     #   tox
-werkzeug==2.2.1
+werkzeug==2.2.2
     # via flask
 wheel==0.37.1
     # via pip-tools
