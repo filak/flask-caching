@@ -42,7 +42,7 @@ class FileSystemCacheMsgspec(BaseCache):
         hash_method=hashlib.md5,
         ignore_errors=False,
         compress=False,
-        compress_level=3,
+        compress_level=6,
     ):
         super(FileSystemCacheMsgspec, self).__init__(default_timeout)
         self._path = cache_dir
@@ -70,7 +70,7 @@ class FileSystemCacheMsgspec(BaseCache):
                 threshold=config["CACHE_THRESHOLD"],
                 ignore_errors=config["CACHE_IGNORE_ERRORS"],
                 compress=config.get("CACHE_COMPRESS", False),
-                compress_level=config.get("CACHE_COMPRESS_LEVEL", 3),
+                compress_level=config.get("CACHE_COMPRESS_LEVEL", 6),
             )
         )
         return cls(*args, **kwargs)
