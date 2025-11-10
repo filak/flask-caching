@@ -9,12 +9,11 @@
     Based on FileSystemCacheGzJson (custom MOD).
 """
 import errno
-import hashlib
 import logging
+import mmh3
 import os
 import stat
 import sys
-import tempfile
 import zlib
 from time import time
 
@@ -39,7 +38,6 @@ class FileSystemCacheMsgspec(BaseCache):
         threshold=500,
         default_timeout=300,
         mode=0o600,
-        hash_method=hashlib.md5,
         ignore_errors=False,
         compress=False,
         compress_level=6,
@@ -48,7 +46,6 @@ class FileSystemCacheMsgspec(BaseCache):
         self._path = cache_dir
         self._threshold = threshold
         self._mode = mode
-        self._hash_method = hash_method
         self.ignore_errors = ignore_errors
         self.compress = compress
         self.compress_level = compress_level
@@ -99,10 +96,9 @@ class FileSystemCacheMsgspec(BaseCache):
         return int(timeout)
 
     def _get_filename(self, key):
-        if isinstance(key, str):
-            key = key.encode("utf-8")
-        hash = self._hash_method(key).hexdigest()
-        return os.path.join(self._path, hash)
+        key_bytes = key if isinstance(key, bytes) else key.encode("utf-8")
+        key_hash = format(mmh3.hash128(key_bytes, signed=False), "032x")
+        return os.path.join(self._path, key_hash)
 
     def _list_dir(self):
         mgmt_files = [
