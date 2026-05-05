@@ -32,7 +32,13 @@ import alabaster
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
+    "sphinxcontrib.log_cabinet",
+    "sphinx_tabs.tabs",
+    "sphinx_issues",
 ]
+
+issues_github_path = "pallets-eco/flask-caching"
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -362,4 +368,4 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/3/": None}
+intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}

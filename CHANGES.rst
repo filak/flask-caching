@@ -1,13 +1,27 @@
 Changelog
 =========
 
+Version 2.4.0
+-------------
+
+2026-04-17
+
+- Modernize project setup
+- Update ``intersphinx_mapping`` for Sphinx 8 compatibility. :pr:`599`, :issue:`598`
+- Pass CACHE_OPTIONS as kwargs to redis_from_url. :pr:`591`
+- Pass sentinel_kwargs to redis client via CACHE_OPTIONS :pr:`626`
+- Fix ``response_hit_indication`` return True always. :pr:`579`, :pr:`596`, :issue:`595`, :issue:`570`
+- Use ``FORWARDREF`` annotation format when introspecting decorated
+  functions so that ``@memoize`` / ``@cached`` work with
+  ``TYPE_CHECKING``-only annotations on Python 3.14. :issue:`636`
+
+
 Version 2.3.1
 -------------
 
 Released 2025-02-22
 
-- Relax cachelib version to allow latest releases 
-
+- Relax cachelib version to allow latest releases
 
 
 Version 2.3.0

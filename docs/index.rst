@@ -123,7 +123,7 @@ non-view related functions. The only stipulation is that you replace the
 ``key_prefix``, otherwise it will use the request.path cache_key.
 Keys control what should be fetched from the cache. If, for example, a key
 does not exist in the cache, a new key-value entry will be created in the
-cache. Otherwise the the value (i.e. the cached result) of the key will be
+cache. Otherwise the value (i.e. the cached result) of the key will be
 returned::
 
     @cache.cached(timeout=50, key_prefix='all_comments')
@@ -138,9 +138,9 @@ Make Custom `Cache Key`
 
 Sometimes you want to define your cache key for each route. Using the same ``@cached``
 decorator you are able to specify how this key is generated. This might be useful when
-the key for cache is should not be just the default key_prefix, but has to be derived
-from other parameters in a request. An example usecase would be for caching POST routes.
-Where the cache key should be derived from the data in that request, rather than just the
+the key for cache should not be just the default key_prefix, but has to be derived
+from other parameters in a request. An example usecase would be for caching POST routes,
+where the cache key should be derived from the data in that request, rather than just the
 route/view itself.
 
 ``make_cache_key`` can be used to specify such a function. The function should return a
@@ -548,6 +548,7 @@ Set ``CACHE_TYPE`` to ``RedisSentinel`` to use this type.  The old name,
 - CACHE_REDIS_SENTINELS
 - CACHE_REDIS_SENTINEL_MASTER
 - CACHE_REDIS_PASSWORD
+- CACHE_REDIS_SENTINEL_PASSWORD
 - CACHE_REDIS_DB
 
 Entries in CACHE_OPTIONS are passed to the redis client as ``**kwargs``
